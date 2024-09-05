@@ -6,14 +6,12 @@ import {
   FetchArgs,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
-// import image from "../../../"
 import { RootState } from "../store";
 import { logout, setUser } from "../features/auth/authSlice";
+import config from "../../config";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "https://assignment-four-server.vercel.app/api/v1",
-  // baseUrl: `${import.meta.env.SERVER_URL}/api/v1`,
-  //  baseUrl: "http://localhost:5000/api/v1",
+  baseUrl: `${config.server_url}/api/v1`,
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
@@ -26,7 +24,7 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-// console.log('process.env.SERVER_URL',process.env.SERVER_URL)
+console.log('process.env.SERVER_URL',config.server_url)
 
 const baseQueryWithRefreshToken: BaseQueryFn<
   FetchArgs,
@@ -40,9 +38,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
     //* Send Refresh
     console.log("Sending refresh token");
 
-    const res = await fetch("https://assignment-four-server.vercel.app/api/v1/auth/refresh-token", {
-    // const res = await fetch(`${import.meta.env.SERVER_URL}/api/v1/auth/refresh-token`, {
-      // const res = await fetch("http://localhost:5000/api/v1/auth/refresh-token", {
+    const res = await fetch(`${config.server_url}/api/v1/auth/refresh-token`, {
       method: "POST",
       credentials: "include",
     });

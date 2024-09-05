@@ -142,7 +142,8 @@ export default function Cart({
                                     shape="circle"
                                     size="small"
                                     icon={<PlusOutlined />}
-                                    disabled={product.quantity > product.stock} // Optional: Disable if stock is reached
+                                    // disabled={product.quantity > product.stock} // Optional: Disable if stock is reached
+                                    disabled={product.stock < 1}
                                   />
                                 </div>
 

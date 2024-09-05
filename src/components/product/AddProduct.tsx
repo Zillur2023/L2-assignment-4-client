@@ -16,6 +16,7 @@ import { useGetAllCategoriesQuery } from "../../redux/features/category/category
 import { useCreateProductMutation } from "../../redux/features/product/productApi";
 import { toast } from "sonner";
 import { RcFile } from "antd/es/upload";
+import config from "../../config";
 
 const { Title } = Typography;
 
@@ -58,29 +59,53 @@ const AddProduct: React.FC = () => {
     }
 
     try {
+      const imageFile = fileList[0].originFileObj as Blob; // Get the image file as Blob
+
+      const imageHostingKey = config.image_hosting_key;
+      const imageHostingApi = `${config.image_hosting_api}?key=${imageHostingKey}`;
+
+      // Create FormData object for image upload
       const formData = new FormData();
-      formData.append("image", fileList[0].originFileObj as Blob); // Append the first file
+      formData.append("image", imageFile);
 
-      const productData = {
-        name: dataInfo.name,
-        category: dataInfo.category,
-        price: dataInfo.price,
-        stock: dataInfo.stock,
-        description: dataInfo.description,
-      };
-
-      formData.append("data", JSON.stringify(productData));
-
-      console.log("FormData:", formData);
-
-      toast.promise(createProduct(formData).unwrap(), {
-        loading: "Loading...",
-        success: () => `${dataInfo.name} has been added`,
-        error: "Error occurred while adding product",
+      const response = await fetch(imageHostingApi, {
+        method: "POST",
+        body: formData, // Send the FormData object
       });
-      reset();
-      setFileList([]); // Clear file list after successful submission
-      clearErrors("image"); // Clear the image error if it exists
+
+      const result = await response.json();
+
+      console.log("imageHostingResult", result);
+
+      if (result.success) {
+        const imageUrl = result.data.url; // Get the hosted image URL from ImgBB
+
+        const productData = {
+          name: dataInfo.name,
+          category: dataInfo.category,
+          price: dataInfo.price,
+          stock: dataInfo.stock,
+          description: dataInfo.description,
+          image: imageUrl, // Use the hosted image URL
+        };
+
+        console.log({ productData });
+
+        await toast.promise(
+          createProduct(productData).unwrap(),
+          {
+            loading: "Loading...",
+            success: () => `${dataInfo.name} has been added`,
+            error: "Error occurred while adding product",
+          }
+        );
+
+        reset();
+        setFileList([]); // Clear file list after successful submission
+        clearErrors("image"); // Clear the image error if it exists
+      } else {
+        throw new Error("Image upload failed");
+      }
     } catch (error) {
       message.error("Failed to add product. Please try again.");
     }

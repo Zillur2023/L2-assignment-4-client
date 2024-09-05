@@ -62,6 +62,8 @@ const Checkout: React.FC = () => {
             // Redirect to the payment page
             const paymentUrl = data.paymentSession.payment_url;
             window.location.href = paymentUrl;
+
+            console.log({paymentUrl})
   
             return 'Order has been created successfully! Redirecting to payment...';
           },

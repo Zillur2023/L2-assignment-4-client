@@ -35,7 +35,9 @@ const cartSlice = createSlice({
         if (existingProduct.stock > 0) {
           existingProduct.stock -= 1;
           existingProduct.quantity += 1;
-          state.totalPrice = parseFloat((state.totalPrice + existingProduct.price).toFixed(2));
+          state.totalPrice = parseFloat(
+            (state.totalPrice + existingProduct.price).toFixed(2)
+          );
           state.totalProductsQty += 1;
         }
       } else {
@@ -44,47 +46,70 @@ const cartSlice = createSlice({
           state.products.push({
             ...action.payload,
             quantity: 1,
-            stock: action.payload.stock - 1,
+            // stock: action.payload.stock - 1, // Decrease stock
           });
-          state.totalPrice = parseFloat((state.totalPrice + action.payload.price).toFixed(2));
+          state.totalPrice = parseFloat(
+            (state.totalPrice + action.payload.price).toFixed(2)
+          );
           state.totalProductsQty += 1;
         }
       }
     },
     increaseQuantity: (state, action: PayloadAction<string>) => {
-      const product = state.products.find((product) => product._id === action.payload);
-      if (product && product.quantity <= product.stock) {
+      const product = state.products.find(
+        (product) => product._id === action.payload
+      );
+      if (product && product.stock > 0) {
         product.quantity += 1;
+        product.stock -= 1; // Decrease stock
         state.totalProductsQty += 1;
-        state.totalPrice = parseFloat((state.totalPrice + product.price).toFixed(2));
+        state.totalPrice = parseFloat(
+          (state.totalPrice + product.price).toFixed(2)
+        );
       }
     },
     decreaseQuantity: (state, action: PayloadAction<string>) => {
-      const product = state.products.find((product) => product._id === action.payload);
+      const product = state.products.find(
+        (product) => product._id === action.payload
+      );
       if (product && product.quantity > 1) {
         product.quantity -= 1;
+        product.stock += 1; // Increase stock
         state.totalProductsQty -= 1;
-        state.totalPrice = parseFloat((state.totalPrice - product.price).toFixed(2));
+        state.totalPrice = parseFloat(
+          (state.totalPrice - product.price).toFixed(2)
+        );
       }
     },
     removeItem: (state, action: PayloadAction<string>) => {
-      const product = state.products.find((product) => product._id === action.payload);
+      const product = state.products.find(
+        (product) => product._id === action.payload
+      );
       if (product) {
+        // Update stock back
+        product.stock += product.quantity;
+
         state.totalProductsQty -= product.quantity;
         state.totalPrice = parseFloat(
           (state.totalPrice - product.price * product.quantity).toFixed(2)
         );
-        state.products = state.products.filter((product) => product._id !== action.payload);
+        state.products = state.products.filter(
+          (product) => product._id !== action.payload
+        );
       }
     },
     clearCart(state) {
       // Reset all products, quantities, and total values
+      state.products.forEach((product) => {
+        product.stock += product.quantity; // Reset stock for all products
+      });
       state.products = [];
       state.totalProductsQty = 0;
       state.totalPrice = 0;
     },
   },
 });
+
 
 export const {
   addItem,

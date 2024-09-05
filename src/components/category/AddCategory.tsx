@@ -14,6 +14,7 @@ import type { UploadFile, UploadProps } from "antd";
 import { useCreateCategoryMutation } from "../../redux/features/category/categoryApi";
 import { toast } from "sonner";
 import { RcFile } from "antd/es/upload";
+import config from "../../config";
 
 const { Title } = Typography;
 
@@ -52,14 +53,14 @@ const AddCategory: React.FC = () => {
     try {
       const imageFile = fileList[0].originFileObj as Blob; // Get the image file as Blob
   
-      const image_hosting_key = 'd686a14f67c883bd74bfcfca42893a08';
-      const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
+      const imageHostingKey = config.image_hosting_key;
+      const imageHostingApi = `${config.image_hosting_api}?key=${imageHostingKey}`;
   
       // Create FormData object
       const formData = new FormData();
       formData.append("image", imageFile);
   
-      const response = await fetch(image_hosting_api, {
+      const response = await fetch(imageHostingApi, {
         method: "POST",
         body: formData, // Send the FormData object
       });

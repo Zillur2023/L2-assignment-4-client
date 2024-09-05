@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { Card } from "antd";
+import { Card, message } from "antd";
 import Meta from "antd/es/card/Meta";
 import "antd/dist/reset.css"; // Make sure Ant Design styles are properly imported
-import { useAppDispatch } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { addItem } from "../../redux/features/cart/cartSlice";
 
 import Cart from "../cart/Cart";
+import { RootState } from "../../redux/store";
 
 // Utility function to merge class names
 // function classNames(...classes: string[]) {
@@ -29,25 +30,55 @@ interface ProductDetailsProps {
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
   // console.log("productDetails---> ", product);
+  // console.log('cartProducts',products)
   const [open, setOpen] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const dispatch = useAppDispatch();
+  const { products } = useAppSelector((state: RootState) => state.cart);
 
+  const findProductInCart = (productId: string) => {
+    return products.find((item) => item._id === productId);
+  };
+  
   const handleAddToCart = () => {
-    if (product.stock > 0) {
-      dispatch(
-        addItem({
-          _id: product._id,
-          name: product.name,
-          image: product.image,
-          price: parseFloat(product.price.toFixed(2)),
-          stock: product.stock,
-          quantity: 1,
-        })
-      );
-      setOpenCart(true);
+    const cartProduct = findProductInCart(product._id);
+  
+    // If product is found in the cart, check stock and add accordingly
+    if (cartProduct) {
+      const remainingStock = product.stock - cartProduct.quantity;
+  
+      if (remainingStock > 0) {
+        dispatch(
+          addItem({
+           ...cartProduct, // Ensure price is formatted correctly
+            stock: remainingStock, // Remaining stock after adding one more
+            quantity: cartProduct.quantity + 1, // Increase the quantity in the cart by 1
+          })
+        );
+        setOpenCart(true);
+      } else {
+        message.error("No more stock available.");
+      }
+    } else {
+      // If product is not in the cart, add it with initial quantity
+      if (product.stock > 0) {
+        dispatch(
+          addItem({
+            _id: product._id,
+            name: product.name,
+            image: product.image,
+            price: parseFloat(product.price.toFixed(2)), // Ensure price is formatted correctly
+            stock: product.stock - 1, // Decrease the stock by 1
+            quantity: 1, // Add with initial quantity of 1
+          })
+        );
+        setOpenCart(true);
+      } else {
+        message.error("No more stock available.");
+      }
     }
   };
+  
 
   const addProductBtnClass = `mt-6 flex w-full items-center justify-center rounded-md border border-transparent 
     ${product.stock > 0 ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-not-allowed'} 
@@ -133,7 +164,7 @@ export default function ProductDetails({ product }: ProductDetailsProps) {
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
-              disabled={product.stock === 0}
+              // disabled={totalQty >= product.stock}
               type="button"
               className={addProductBtnClass}
               >
