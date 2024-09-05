@@ -1,0 +1,143 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Cardio Equipment",
+      "image": "https://example.com/images/cardio-equipment.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Strength Equipment",
+      "image": "https://example.com/images/strength-equipment.jpg"
+    },
+    {
+      "id": 3,
+      "name": "Flexibility & Mobility",
+      "image": "https://example.com/images/flexibility-mobility.jpg"
+    },
+    {
+      "id": 4,
+      "name": "Accessories",
+      "image": "https://example.com/images/accessories.jpg"
+    }
+  ],
+  "products": [
+    { 
+      "category": "66b69f15c71ea2013edbff26",
+      "name": "Treadmill Pro 3000",
+      "price": 1299.99,
+      "stock": 10,
+      "description": "High-performance treadmill with multiple preset workouts and incline settings.",
+      "image": "https://example.com/images/treadmill-pro-3000-front.jpg",
+      
+    },
+    {
+      "category": "66b69f15c71ea2013edbff24",
+      "name": "Dumbbell Set 50lb",
+      "price": 199.99,
+      "stock": 20,
+      "description": "Adjustable dumbbell set with a range of weights from 5lb to 50lb.",
+      "image": "https://example.com/images/dumbbell-set-50lb.jpg"
+      
+    },
+    {
+      "category": "66b69f15c71ea2013edbff25",
+      "name": "Yoga Mat Pro",
+      "price": 49.99,
+      "stock": 50,
+      "description": "Premium yoga mat with extra cushioning for superior comfort and support.",
+      "image": "https://example.com/images/yoga-mat-pro.jpg"
+      
+    },
+    {
+      "category": "66b69f15c71ea2013edbff27",
+      "name": "Resistance Bands Set",
+      "price": 29.99,
+      "stock": 100,
+      "description": "Complete set of resistance bands with varying levels of tension.",
+      "image": "https://example.com/images/resistance-bands-set.jpg"
+      
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "phone": "123-456-7890",
+      "address": "123 Fitness St, Workout City, Gym State, 12345"
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "phone": "098-765-4321",
+      "address": "456 Muscle Ave, Fitness Town, Strongland, 67890"
+    }
+  ],
+  "cart": [
+    {
+      "userId": 1,
+      "items": [
+        {
+          "productId": 2,
+          "quantity": 2
+        },
+        {
+          "productId": 3,
+          "quantity": 1
+        }
+      ]
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "userId": 1,
+      "products": [
+        {
+          "productId": 2,
+          "quantity": 2
+        },
+        {
+          "productId": 3,
+          "quantity": 1
+        }
+      ],
+      "totalPrice": 449.97,
+      "status": "Pending"
+    }
+  ]
+}
+
+
+   try {
+        const { data: transactionIdData } = await orderbyTransactionId(paymentData.transactionId).unwrap();
+  
+        console.log("Transaction ID Data:", transactionIdData);
+  
+        if (transactionIdData?.paymentStatus === "paid") {
+          // Update the stock for each product after successful payment
+          await Promise.all(
+            products.map(async (product) => {
+              try {
+                await updateProduct({
+                  _id: product._id,
+                  stock: product.stock - product.quantity, // Adjust stock value
+                }).unwrap();
+              } catch (updateError) {
+                console.error("Failed to update product stock:", product.name, updateError);
+              }
+            })
+          );
+  
+          // Clear the cart after successful order creation and stock update
+          dispatch(clearCart());
+          alert("Order created and payment confirmed successfully!");
+        } else {
+          alert("Payment confirmation failed. Please try again.");
+        }
+      } catch (error) {
+        console.error("Payment confirmation failed:", error);
+        alert("Order created, but payment confirmation failed. Please try again.");
+      }
