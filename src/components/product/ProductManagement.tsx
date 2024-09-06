@@ -56,7 +56,6 @@ const ProductManagement: React.FC = () => {
   const handleDelete = async (product: any) => {
     try {
       await deleteProduct(product._id);
-      console.log("Product deleted successfully:", product.name);
     } catch (error) {
       console.error("Failed to delete product:", error);
     }

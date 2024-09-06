@@ -4,7 +4,6 @@ const categoryApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createCategory: builder.mutation({
       query: (formData) => {
-        // console.log({ formData });
         return {
           url: "/category/create-category",
           method: "POST",

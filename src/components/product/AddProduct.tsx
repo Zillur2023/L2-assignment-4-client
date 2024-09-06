@@ -75,7 +75,6 @@ const AddProduct: React.FC = () => {
 
       const result = await response.json();
 
-      console.log("imageHostingResult", result);
 
       if (result.success) {
         const imageUrl = result.data.url; // Get the hosted image URL from ImgBB
@@ -89,7 +88,6 @@ const AddProduct: React.FC = () => {
           image: imageUrl, // Use the hosted image URL
         };
 
-        console.log({ productData });
 
         await toast.promise(
           createProduct(productData).unwrap(),

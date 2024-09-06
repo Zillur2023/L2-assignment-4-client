@@ -9,6 +9,7 @@ import {
 import { RootState } from "../store";
 import { logout, setUser } from "../features/auth/authSlice";
 import config from "../../config";
+import { toast } from "sonner";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: `${config.server_url}/api/v1`,
@@ -24,19 +25,25 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-console.log('process.env.SERVER_URL',config.server_url)
 
 const baseQueryWithRefreshToken: BaseQueryFn<
   FetchArgs,
   BaseQueryApi,
   DefinitionType
 > = async (args, api, extraOptions): Promise<any> => {
-  let result = await baseQuery(args, api, extraOptions);
-  // console.log({result})
+  let result:any = await baseQuery(args, api, extraOptions);
+
+
+  // if (result?.error?.data?.err?.statusCode === 401) {
+  if (result?.error?.status === 404) {
+    toast.error('User not found')
+  }
+  if (result?.error?.status === 403) {
+    toast.error('Password not match')
+  }
 
   if (result?.error?.status === 401) {
     //* Send Refresh
-    console.log("Sending refresh token");
 
     const res = await fetch(`${config.server_url}/api/v1/auth/refresh-token`, {
       method: "POST",
@@ -44,8 +51,6 @@ const baseQueryWithRefreshToken: BaseQueryFn<
     });
 
     const data = await res.json();
-    console.log({ res });
-    console.log({ data });
 
     if (data?.data?.accessToken) {
       const user = (api.getState() as RootState).auth.user;
@@ -63,7 +68,6 @@ const baseQueryWithRefreshToken: BaseQueryFn<
     }
   }
 
-  console.log("result-------->", result);
   return result;
 };
 

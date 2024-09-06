@@ -39,7 +39,6 @@ export default function Navbar() {
   const { user } = useAppSelector((state: RootState) => state.auth);
   const { products,totalProductsQty } = useAppSelector((state:RootState) => state.cart)
   
-  // console.log('items,totalItems,totalPrice',products,totalProductsQty,totalPrice)
   
   
   return (

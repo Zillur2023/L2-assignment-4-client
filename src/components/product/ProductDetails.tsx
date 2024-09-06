@@ -29,8 +29,6 @@ interface ProductDetailsProps {
 }
 
 export default function ProductDetails({ product }: ProductDetailsProps) {
-  // console.log("productDetails---> ", product);
-  // console.log('cartProducts',products)
   const [open, setOpen] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const dispatch = useAppDispatch();

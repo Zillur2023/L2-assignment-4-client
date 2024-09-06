@@ -5,10 +5,6 @@ import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useCreateUserMutation } from '../../redux/user/userApi';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { setUser } from '../../redux/features/auth/authSlice';
-import { useAppDispatch } from '../../redux/hooks';
-import { useLoginMutation } from '../../redux/features/auth/authApi';
-import { jwtDecode } from 'jwt-decode';
 
 type FormValues = {
   name: string;
@@ -29,14 +25,12 @@ const Register: React.FC = () => {
     },
   });
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
   const [ createUser ] = useCreateUserMutation()
-  const [ Login ] = useLoginMutation()
+
 
 
   const onSubmit: SubmitHandler<FormValues> = async (formData) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {name, ...loginData} = formData
 
     const result = await createUser(formData).unwrap()
     if(result.success){
@@ -45,20 +39,17 @@ const Register: React.FC = () => {
     }else{
 
         toast.warning(result?.message)
+        navigate('/auth/login')
     }
-    const {data} = await Login(loginData).unwrap()
-    const {token} = data
-    const user = jwtDecode(token)
-     dispatch( setUser({user,token}))
-     navigate('/')
+ 
+     
   };
-
   const goToLogin = () => {
-    navigate("/login");
+    navigate("/auth/login");
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center m-10 bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center text-gray-800">Register</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

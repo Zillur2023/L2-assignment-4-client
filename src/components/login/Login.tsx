@@ -7,6 +7,7 @@ import { setUser } from "../../redux/features/auth/authSlice";
 import { useLoginMutation } from "../../redux/features/auth/authApi";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "sonner";
 
 type FormValues = {
   email: string;
@@ -33,17 +34,30 @@ const Login: React.FC = () => {
   const from = (location.state as { from: string })?.from || "/";
 
   const onSubmit: SubmitHandler<FormValues> = async (formData) => {
-    const { data } = await login(formData).unwrap();
-    const { token } = data;
-    const user = jwtDecode(token);
-    dispatch(setUser({ user, token }));
-
-    // Navigate to the stored location or home page after login
-    navigate(from, { replace: true });
+     toast.promise(
+      login(formData).unwrap(),
+      {
+        loading: "Logging in...",
+        success: ({data}) => {
+          const { token } = data;
+          const user:any = jwtDecode(token);
+  
+          dispatch(setUser({ user, token }));
+  
+          // Navigate to the stored location or home page after login
+          navigate(from, { replace: true });
+  
+          return `${user?.email} has been logged in successfully!`;
+        },
+        
+        // error: "Error occurred while logging in",
+      }
+    );
   };
+  
 
   const goToRegister = () => {
-    navigate("/register");
+    navigate("/auth/register");
   };
 
   return (

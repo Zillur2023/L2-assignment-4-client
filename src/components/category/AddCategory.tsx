@@ -44,7 +44,6 @@ const AddCategory: React.FC = () => {
   });
 
   const onSubmit: SubmitHandler<FormValues> = async (dataInfo) => {
-    console.log("addCategoryFromData", dataInfo);
     if (fileList.length === 0) {
       setError("image", { type: "manual", message: "Image is required" });
       return;
@@ -67,7 +66,6 @@ const AddCategory: React.FC = () => {
   
       const result = await response.json();
   
-      console.log("imageHostingResult", result);
   
       if (result.success) {
         const imageUrl = result.data.url; // Get the hosted image URL from ImgBB
@@ -77,7 +75,6 @@ const AddCategory: React.FC = () => {
           image: imageUrl, // Use the hosted image URL
         };
 
-       console.log({categoryData})
   
         // Call your API to create the category with the hosted image URL
         // await createCategory(categoryData);

@@ -58,7 +58,6 @@ export default function Product() {
 
   const { data, isLoading } = useGetAllProductsQuery(filter);
 
-  // console.log("productData", data?.data?.length);
 
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -103,8 +102,6 @@ export default function Product() {
     },
   ];
 
-  // console.log('categoryData', data?.data?.map((item: any)=> item.name))
-  console.log("categoryData", data?.data);
 
   const handleSortChange = (
     e: React.MouseEvent<HTMLDivElement>,

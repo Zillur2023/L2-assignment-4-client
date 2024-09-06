@@ -39,7 +39,6 @@ const Checkout: React.FC = () => {
   );
 
   const onSubmit: SubmitHandler<FormValues> = async (user) => {
-    console.log("checkOutData", products);
   
     // Prepare the order data
     const orderData = {
@@ -57,13 +56,11 @@ const Checkout: React.FC = () => {
         {
           loading: 'Creating order...',
           success: ({data}) => {
-            // console.log("Order created successfully:", data);
   
             // Redirect to the payment page
             const paymentUrl = data.paymentSession.payment_url;
             window.location.href = paymentUrl;
 
-            console.log({paymentUrl})
   
             return 'Order has been created successfully! Redirecting to payment...';
           },

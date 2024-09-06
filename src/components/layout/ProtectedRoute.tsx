@@ -11,7 +11,6 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const location = useLocation();
   const { user } = useAppSelector((state: RootState) => state.auth);
-  console.log({user})
 
   if (!user) {
     // If no user, redirect to login

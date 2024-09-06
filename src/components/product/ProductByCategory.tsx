@@ -54,26 +54,13 @@ export default function ProductByCategory() {
   });
 
   const { category } = useParams<{ category: string }>();
-  // console.log({category})
 
   const { data, isLoading } = useGetProductByCategoryQuery({category,filter});
-
-  // console.log('productByCategory',data?.data?.result)
-  // if (!isLoading && data?.data?.result) {
-  //   console.log('productByCategoryDetails', data.data.result.map((item: any) => ({
-  //     value: item._id,
-  //     label: item.name,
-  //     checked: false
-  //   })));
-  // } else {
-  //   console.log('Data is loading or is undefined.');
-  // }
 
  
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    // console.log('E--->',e.target)
     const { name, value, checked } = e.target as HTMLInputElement;
   
     setFilter((prev) => {
@@ -112,9 +99,7 @@ export default function ProductByCategory() {
         })),
       },
     ];
-  } else {
-    // console.log('Data is still loading or is undefined.');
-  }
+  } 
 
   const handleSortChange = (
     e: React.MouseEvent<HTMLDivElement>,

@@ -6,32 +6,19 @@ import { useMaxPriceQuery } from "../../redux/features/product/productApi";
 const { Title } = Typography;
 
 const Price: React.FC<TPriceProps> = ({ filter, setFilter }) => {
-  // const { data, isLoading, isError } = useGetAllProductsQuery(filter);
   const { data } = useMaxPriceQuery("");
-  // console.log('maxPrice',data)
   const [maxPrice, setMaxPrice] = useState(100);
-  // console.log({maxPrice})
 
-  // const {data} = useGetMaxPriceProductQuery('')
-  // const data = 10000
 
   // Derive maxPrice from the fetched data
   if (data) {
     const calculatedMaxPrice = Number(data?.data);
-    // console.log({calculatedMaxPrice})
-    // const calculatedMaxPrice = Number(data);
     if (maxPrice !== calculatedMaxPrice) {
       setMaxPrice(calculatedMaxPrice);
     }
   }
 
-  // const handleSliderChange = (value: [number, number]) => {
-  //   setFilter(prevFilter => ({
-  //     ...prevFilter,
-  //     priceMin: value[0],
-  //     priceMax: value[1],
-  //   }));
-  // };
+ 
   const handleSliderChange = (value: number | [number, number]) => {
     // Ensure the value is a tuple (array with exactly two numbers)
     if (Array.isArray(value) && value.length === 2) {
