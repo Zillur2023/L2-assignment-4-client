@@ -3,14 +3,14 @@ import Login from "../components/login/Login";
 import Register from "../components/register/Register";
 import MainLayout from "../components/layout/MainLayout";
 import HomePage from "../pages/HomePage";
-import CategoryPage from "../pages/CategoryPage";
-import ProductPage from "../pages/ProductPage";
-import ProductByCategory from "../components/product/ProductByCategory";
-import CheckoutPage from "../pages/CheckoutPage";
-import ProductManagementPage from "../pages/ProductManagementPage";
-import AddProductPage from "../pages/AddProductPage";
-import AddCategoryPage from "../pages/AddCategoryPage";
+import ServicePage from "../pages/ServicePage";
 import ProtectedRoute from "../components/layout/ProtectedRoute";
+import NotFoundPage from "../pages/NotFoundPage";
+import ServiceManagementPage from "../pages/ServiceManagementPage";
+import AddServicePage from "../pages/AddServicePage";
+import CreateSlotPage from "../pages/CreateSlotPage";
+import SlotManagementPage from "../pages/SlotManagementPage";
+import BookingPage from "../pages/BookingPage";
 
 const router = createBrowserRouter([
   {
@@ -21,38 +21,39 @@ const router = createBrowserRouter([
         path: "",
         element: <HomePage />,
       },
+
       {
-        path: "category",
-        element: <CategoryPage />,
+        path: "services",
+        element: <ServicePage />,
+      },
+
+      {
+        path: "add-service",
+        element: (
+          <ProtectedRoute>
+            <AddServicePage />
+          </ProtectedRoute>
+        ),
       },
       {
-        path: "products",
-        element: <ProductPage />,
+        path: "service-management",
+        element: <ServiceManagementPage />,
       },
       {
-        path: "category",
-        element: <CategoryPage />,
+        path: "create-slot",
+        element: (
+            <CreateSlotPage />
+        ),
       },
       {
-        path: "productByCategory/:category",
-        element: <ProductByCategory />,
+        path: "slot-management",
+        element: <SlotManagementPage />,
       },
       {
-        path: "checkout",
-        element: <ProtectedRoute><CheckoutPage /></ProtectedRoute>,
+        path: "booking",
+        element: <BookingPage/>
       },
-      {
-        path: "add-product",
-        element: <ProtectedRoute><AddProductPage /></ProtectedRoute>,
-      },
-      {
-        path: "productManagement",
-        element: <ProtectedRoute><ProductManagementPage /></ProtectedRoute>,
-      },
-      {
-        path: "add-category",
-        element: <ProtectedRoute><AddCategoryPage /></ProtectedRoute>
-      },
+
       {
         path: "auth/login",
         element: <Login />,
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
       {
         path: "auth/register",
         element: <Register />,
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
       },
     ],
   },

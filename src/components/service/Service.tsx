@@ -18,13 +18,17 @@ import { useState } from "react";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon, FunnelIcon } from "@heroicons/react/20/solid";
 import { Input, Pagination } from "antd";
-import { TClassValue, TFilter, TFilterOptions, TFilterOptionsValue, TSortOptions } from "../../types";
+import {
+  TClassValue,
+  TFilter,
+  TFilterOptions,
+  TFilterOptionsValue,
+  TSortOptions,
+} from "../../types";
 import MobileFilter from "./MobileFilter";
 import DesktopFilter from "./DesktopFilter";
-import { useGetProductByCategoryQuery } from "../../redux/features/product/productApi";
-import { useParams } from "react-router-dom";
-import ProductDetails from "./ProductDetails";
-
+import { useGetAllServicesQuery } from "../../redux/features/service/serviceApi";
+import ServiceDetails from "./ServiceDetails";
 
 const sortOptions: TSortOptions[] = [
   // { name: "Most Popular", href: "#", current: true },
@@ -34,12 +38,11 @@ const sortOptions: TSortOptions[] = [
   { name: "Price: High to Low", value: "-price", current: true },
 ];
 
-
 function classNames(...classes: TClassValue[]): string {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function ProductByCategory() {
+export default function Service() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [sort, setSort] = useState<string>("");
@@ -53,53 +56,51 @@ export default function ProductByCategory() {
     fields: "",
   });
 
-  const { category } = useParams<{ category: string }>();
+  const { data, isLoading } = useGetAllServicesQuery(filter);
+  console.log("useGetAllServicesQueryData", data);
 
-  const { data, isLoading } = useGetProductByCategoryQuery({category,filter});
-
- 
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value, checked } = e.target as HTMLInputElement;
-  
+
     setFilter((prev) => {
-      const newFilter = { ...prev, [name]: checked ? value : undefined } as TFilter;
+      const newFilter = {
+        ...prev,
+        [name]: checked ? value : undefined,
+      } as TFilter;
       return newFilter;
     });
   };
-  
-  let filterOptionsValue: TFilterOptionsValue[] = [];
 
-  if (!isLoading && data?.data?.result) {
-    filterOptionsValue = [
-      {
-        id: "category",
-        name: "Category",
-        options: Array.from(
-          new Map(
-            data.data.result.map((item: any) => [
-              item.category._id, // Use category._id as the unique key
-              {
-                value: item.category._id,
-                label: item.category.name,
-                checked: false,
-              },
-            ])
-          ).values() // Extract only the unique filter option objects
-        ) as TFilterOptions[],
-      },
-      {
-        id: "_id",
-        name: "Product list",
-        options: data.data.result.map((item: any) => ({
-          value: item._id,
-          label: item.name,
-          checked: false,
-        })),
-      },
-    ];
-  } 
+  const filterOptionsValue: TFilterOptionsValue[] = [
+    // {
+    //   id: "category",
+    //   name: "Category",
+    //   options: Array.from(
+    //     new Map(
+    //       data?.data?.map((item: any) => [
+    //         item.category._id, // Use category._id as the unique key
+    //         {
+    //           value: item.category._id,
+    //           label: item.category.name,
+    //           checked: false,
+    //         },
+    //       ])
+    //     ).values() // Extract only the unique filter option objects
+    //   ) as TFilterOptions[],
+    // },
+
+    {
+      id: "_id",
+      name: "Product list",
+      options: data?.data?.map((item: any) => ({
+        value: item._id,
+        label: item.name,
+        checked: false,
+      })),
+    },
+  ];
 
   const handleSortChange = (
     e: React.MouseEvent<HTMLDivElement>,
@@ -130,8 +131,9 @@ export default function ProductByCategory() {
 
   return (
     <div className="bg-white">
-    {/* // <div className=""> */}
+      {/* // <div className=""> */}
       <div> {isLoading && "Loading..."} </div>
+
       <div>
         {/* Mobile filter dialog */}
         <MobileFilter
@@ -220,45 +222,48 @@ export default function ProductByCategory() {
             <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
               {/* Filters */}
               <DesktopFilter
-               filter={filter}
-               setFilter={setFilter}
+                filter={filter}
+                setFilter={setFilter}
                 handleFilterChange={handleFilterChange}
                 filterOptionsValue={filterOptionsValue}
                 handleClearFilters={handleClearFilters}
               />
 
               {/* Product grid */}
-  
-              <div className="lg:col-span-3">{/* Your content */}
-              <div className="mb-5">
-  {isLoading ? (
-    "Loading..."
-  ) : (
-    <div>
-      <h4 className="font-medium m-5">
-        Total products {data?.data?.result?.length || 0}
-      </h4>
-      <div className="flex justify-center items-center">
-        {data?.data?.result?.length > 0 ? ( // Check if there are any products
-          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {data?.data?.result?.map((product: any) => (
-              <div key={product._id}>
-                <ProductDetails product={product} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-center text-gray-500">No products found.</p> // Message when no products
-        )}
-      </div>
-    </div>
-  )}
-</div>
-              <Pagination
-                align="end"
-                defaultCurrent={9}
-                total={data?.meta?.total}
-              />
+
+              <div className="lg:col-span-3">
+                {/* Your content */}
+                <div className="mb-5">
+                  {isLoading ? (
+                    "Loading..."
+                  ) : (
+                    <div>
+                      <h4 className="font-medium m-5">
+                        Total service {data?.data?.length || 0}
+                      </h4>
+                      <div className="flex justify-center items-center">
+                        {data?.data?.length > 0 ? ( // Check if there are any products
+                          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {data.data.map((service: any) => (
+                              <div key={service._id}>
+                                <ServiceDetails service={service} />
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-center text-gray-500">
+                            No products found.
+                          </p> // Message when no products
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <Pagination
+                  align="end"
+                  defaultCurrent={9}
+                  total={data?.meta?.total}
+                />
               </div>
             </div>
           </section>

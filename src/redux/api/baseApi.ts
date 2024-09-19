@@ -12,7 +12,7 @@ import config from "../../config";
 import { toast } from "sonner";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: `${config.server_url}/api/v1`,
+  baseUrl: `${config.server_url}/api`,
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
@@ -32,7 +32,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
   DefinitionType
 > = async (args, api, extraOptions): Promise<any> => {
   let result:any = await baseQuery(args, api, extraOptions);
-
+ console.log("reuslt",result?.error)
 
   // if (result?.error?.data?.err?.statusCode === 401) {
   if (result?.error?.status === 404) {
@@ -45,7 +45,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
   if (result?.error?.status === 401) {
     //* Send Refresh
 
-    const res = await fetch(`${config.server_url}/api/v1/auth/refresh-token`, {
+    const res = await fetch(`${config.server_url}/api/auth/refresh-token`, {
       method: "POST",
       credentials: "include",
     });
@@ -73,7 +73,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  tagTypes: ["Product", "Category", "Order"],
+  tagTypes: ["Service", "Slot"],
   baseQuery: baseQueryWithRefreshToken,
   endpoints: () => ({}),
 });

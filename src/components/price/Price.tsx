@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { Slider, Input, Typography, Row, Col } from "antd";
 import { TPriceProps } from "../../types";
-import { useMaxPriceQuery } from "../../redux/features/product/productApi";
+import { useMaxPriceQuery } from "../../redux/features/service/serviceApi";
 
 const { Title } = Typography;
 
 const Price: React.FC<TPriceProps> = ({ filter, setFilter }) => {
   const { data } = useMaxPriceQuery("");
+console.log({data})
   const [maxPrice, setMaxPrice] = useState(100);
+  console.log({maxPrice})
 
 
   // Derive maxPrice from the fetched data

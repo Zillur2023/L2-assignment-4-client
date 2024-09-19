@@ -5,7 +5,7 @@ export default function Banner() {
     <div className="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32 mb-6">
       <img
         alt="Fitness Equipment Banner"
-        src={bannerImg}
+        src="https://i.ibb.co/kG59Y7v/Banner-Image-Template-5ca020fa-f643-4599-afb2-f6df4974d328.png"
         className="absolute inset-0 -z-10 h-full w-full object-cover object-right md:object-center"
       />
       <div
@@ -46,43 +46,11 @@ export default function Banner() {
         <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
           <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-white sm:grid-cols-2 md:flex lg:gap-x-10">
             {/* Add buttons or links to categories here */}
-            <a href="#" className="hover:text-gray-400">
-              Shop Cardio Equipment
-            </a>
-            <a href="#" className="hover:text-gray-400">
-              Browse Strength Training
-            </a>
-            <a href="#" className="hover:text-gray-400">
-              Explore Accessories
-            </a>
-            <a href="#" className="hover:text-gray-400">
-              View All Products
-            </a>
+          
           </div>
           <dl className="mt-16 grid grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
             {/* Add promotional stats or benefits here */}
-            <div>
-              <dt className="text-white font-semibold">Free Shipping</dt>
-              <dd className="text-gray-300 mt-1">On all orders over $50</dd>
-            </div>
-            <div>
-              <dt className="text-white font-semibold">30-Day Returns</dt>
-              <dd className="text-gray-300 mt-1">
-                Easy returns and exchanges
-              </dd>
-            </div>
-            <div>
-              <dt className="text-white font-semibold">Quality Guarantee</dt>
-              <dd className="text-gray-300 mt-1">
-                Only the best products for you
-              </dd>
-            </div>
-            <div>
-              <dt className="text-white font-semibold">Secure Checkout</dt>
-              <dd className="text-gray-300 mt-1">
-                Your information is safe with us
-              </dd>
-            </div>
+          
           </dl>
         </div>
       </div>

@@ -1,14 +1,12 @@
-import React from "react";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { Input, Button, Badge, Avatar } from "antd";
-import {  useAppSelector } from "../../redux/hooks";
-import { RootState } from "../../redux/store";
-import {
-  useCreateOrderMutation,
-
-  
-} from "../../redux/features/order/orderApi";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { Input, Button } from "antd";
 import { toast } from "sonner";
+import { useCreateBookingMutation } from "../../redux/features/booking/bookingApi";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../redux/hooks";
+import { RootState } from "../../redux/store";
+import { useGetUserQuery } from "../../redux/user/userApi";
+import dayjs from "dayjs";
 
 type FormValues = {
   name: string;
@@ -17,104 +15,76 @@ type FormValues = {
   address: string;
 };
 
-const Checkout: React.FC = () => {
-  // const [transactionId, setTransactionId] = useState('')
-  const [createOrder] = useCreateOrderMutation();
-  // const {data:transactionIdData} = useOrderbyTransactionIdQuery(transactionId);
+const Booking = () => {
+  const location = useLocation();
+  const { state } = location;
+  const { service, selectedSlot } = state || {};
+  const navigate = useNavigate();
+  const { user } = useAppSelector((state: RootState) => state.auth);
+  const { data: userInfo } = useGetUserQuery(user?.email, {
+    skip: !user?.email,
+  });
+  const [createBooking] = useCreateBookingMutation();
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({
-    defaultValues: {
-      name: "Zillur",
-      email: "zillur@gmail.com",
-      phone: "12324",
-      address: "Trishal,Mymensingh",
-    },
-  });
+  } = useForm<FormValues>();
 
-  const { products, totalPrice } = useAppSelector(
-    (state: RootState) => state.cart
-  );
-
-  const onSubmit: SubmitHandler<FormValues> = async (user) => {
-  
-    // Prepare the order data
-    const orderData = {
-      user,
-      products: products.map((product) => ({
-        product: product._id,
-        quantity: product.quantity,
-      })),
+  const onSubmit: SubmitHandler<FormValues> = async (customerData) => {
+    const toastId = toast.loading("Creating booking...");
+    const bookingData = {
+      userEmail: user?.email,
+      ...customerData,
+      bookingInfo: { service: service._id, slot: selectedSlot._id },
     };
-  
-    try {
-      // Use toast.promise to handle loading, success, and error states
-       toast.promise(
-        createOrder(orderData).unwrap(),
-        {
-          loading: 'Creating order...',
-          success: ({data}) => {
-  
-            // Redirect to the payment page
-            const paymentUrl = data.paymentSession.payment_url;
-            window.location.href = paymentUrl;
 
-  
-            return 'Order has been created successfully! Redirecting to payment...';
-          },
-          error: 'Order creation failed. Please try again.',
-        }
-      );
+    try {
+      const res = await createBooking(bookingData).unwrap();
+      if (res.success) {
+        toast.success(res.message, { id: toastId });
+        navigate('/')
+      } else {
+        toast.error(res.message, { id: toastId });
+      }
+     
     } catch (error) {
-      console.error("Order creation failed:", error);
-      alert("Order creation failed. Please try again.");
+      console.error("Booking creation failed:", error);
+      alert("Booking creation failed. Please try again.");
     }
   };
-  
-  
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg shadow-lg">
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Checkout</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Product Details */}
+        {/* Service Details */}
         <div className="space-y-4">
-          {products.map((product) => (
-            <div
-              key={product._id}
-              className="flex items-center border p-4 rounded-lg"
-            >
-              <div className="h-20 w-20 flex-shrink-0 rounded-md overflow-hidden">
-                <Badge count={product.quantity} offset={[-10, 10]}>
-                  <Avatar
-                    shape="square"
-                    // size="large"
-                    size={90}
-                    src={product.image} // Replace with your image URL
-                    alt="User Image"
-                    style={{ width: "100%", height: "100%" }}
-                  />
-                </Badge>
-              </div>
-              <div className="ml-4 flex-1">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  {product.name}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Price: ${product.price.toFixed(2)}
-                </p>
-              </div>
+          <div className="flex items-center border p-4 rounded-lg">
+            <img
+              src={service.image}
+              alt={service.name}
+              className="h-24 w-24 object-cover rounded-md"
+            />
+            <div className="ml-4 flex-1">
+              <h3 className="text-lg font-semibold text-gray-800">
+                {service.name}
+              </h3>
+              <p className="text-sm text-gray-500">{service.description}</p>
+              <p className="text-lg font-bold text-gray-900">
+                ${service.price.toFixed(2)}
+              </p>
+              <p>
+                <span className="text-md font-bold text-gray-500">
+                  Service booked :{" "}
+                </span>
+                <span className="text-sm font-medium text-gray-500">
+                  {dayjs(selectedSlot.date).format("MM/DD/YYYY")} -{" "}
+                  {selectedSlot.startTime} to {selectedSlot.endTime}
+                </span>
+              </p>
             </div>
-          ))}
-
-          <div className="mt-4 flex justify-between items-center border-t pt-4">
-            <h3 className="text-lg font-bold text-gray-800">Total:</h3>
-            <p className="text-lg font-bold text-indigo-600">
-              ${totalPrice.toFixed(2)}
-            </p>
           </div>
         </div>
 
@@ -130,6 +100,7 @@ const Checkout: React.FC = () => {
             <Controller
               name="name"
               control={control}
+              defaultValue={userInfo?.data?.name || ""} // Fill with user info if available
               rules={{ required: "Name is required" }}
               render={({ field }) => (
                 <Input
@@ -155,6 +126,7 @@ const Checkout: React.FC = () => {
             <Controller
               name="email"
               control={control}
+              defaultValue={userInfo?.data?.email || ""} // Fill with user info if available
               rules={{
                 required: "Email is required",
                 pattern: {
@@ -188,6 +160,7 @@ const Checkout: React.FC = () => {
             <Controller
               name="phone"
               control={control}
+              defaultValue={userInfo?.data?.phone || ""} // Fill with user info if available
               rules={{ required: "Phone number is required" }}
               render={({ field }) => (
                 <Input
@@ -215,6 +188,7 @@ const Checkout: React.FC = () => {
             <Controller
               name="address"
               control={control}
+              defaultValue={userInfo?.data?.address || ""} // Fill with user info if available
               rules={{ required: "Address is required" }}
               render={({ field }) => (
                 <Input.TextArea
@@ -239,7 +213,7 @@ const Checkout: React.FC = () => {
             className="w-full py-3 mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-md"
             onClick={handleSubmit(onSubmit)}
           >
-            Confirm Order
+            Pay Now
           </Button>
         </div>
       </div>
@@ -247,4 +221,4 @@ const Checkout: React.FC = () => {
   );
 };
 
-export default Checkout;
+export default Booking;

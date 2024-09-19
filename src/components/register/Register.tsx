@@ -35,7 +35,7 @@ const Register: React.FC = () => {
     const result = await createUser(formData).unwrap()
     if(result.success){
         toast.success(result.message)
-        //  dispatch(setUser(result))
+        navigate('/auth/login')
     }else{
 
         toast.warning(result?.message)

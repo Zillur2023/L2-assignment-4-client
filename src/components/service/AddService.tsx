@@ -1,32 +1,25 @@
 import React, { useState } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import {
-  Form,
-  Input,
-  Button,
-  message,
-  Card,
-  Typography,
-  Upload,
-} from "antd";
+import { Form, Input, Button, Upload, message, Card, Typography } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import type { UploadFile, UploadProps } from "antd";
-import { useCreateCategoryMutation } from "../../redux/features/category/categoryApi";
 import { toast } from "sonner";
 import { RcFile } from "antd/es/upload";
 import config from "../../config";
+import type { UploadFile, UploadProps } from "antd";
+import { useCreateServiceMutation } from "../../redux/features/service/serviceApi";
 
 const { Title } = Typography;
 
 type FormValues = {
   name: string;
+  price: number;
+  duration: number;
+  description: string;
   image?: UploadFile[];
 };
 
-
-
-const AddCategory: React.FC = () => {
-  const [createCategory] = useCreateCategoryMutation();
+const AddService: React.FC = () => {
+  const [createService] = useCreateServiceMutation();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const {
@@ -39,6 +32,9 @@ const AddCategory: React.FC = () => {
   } = useForm<FormValues>({
     defaultValues: {
       name: "",
+      price: undefined,
+      duration: undefined,
+      description: "",
       image: [],
     },
   });
@@ -48,57 +44,53 @@ const AddCategory: React.FC = () => {
       setError("image", { type: "manual", message: "Image is required" });
       return;
     }
-  
+
     try {
-      const imageFile = fileList[0].originFileObj as Blob; // Get the image file as Blob
-  
+      const imageFile = fileList[0].originFileObj as Blob;
+
       const imageHostingKey = config.image_hosting_key;
       const imageHostingApi = `${config.image_hosting_api}?key=${imageHostingKey}`;
-  
-      // Create FormData object
+
       const formData = new FormData();
       formData.append("image", imageFile);
-  
+
       const response = await fetch(imageHostingApi, {
         method: "POST",
-        body: formData, // Send the FormData object
+        body: formData,
       });
-  
+
       const result = await response.json();
-  
-  
+
       if (result.success) {
-        const imageUrl = result.data.url; // Get the hosted image URL from ImgBB
-  
-        const categoryData = {
+        const imageUrl = result.data.url;
+
+        const serviceData = {
           name: dataInfo.name,
-          image: imageUrl, // Use the hosted image URL
+          price: dataInfo.price,
+          duration: dataInfo.duration,
+          description: dataInfo.description,
+          image: imageUrl,
         };
 
-  
-        // Call your API to create the category with the hosted image URL
-        // await createCategory(categoryData);
         toast.promise(
-          createCategory(categoryData).unwrap(),
+          createService(serviceData).unwrap(),
           {
             loading: "Loading...",
             success: () => `${dataInfo.name} has been added`,
-            error: "Error occurred while adding category",
+            error: "Error occurred while adding service",
           }
         );
-  
-        toast.success("Category added successfully!");
+
         reset();
-        setFileList([]); // Clear file list after successful submission
-        clearErrors("image"); // Clear the image error if it exists
+        setFileList([]);
+        clearErrors("image");
       } else {
         throw new Error("Image upload failed");
       }
     } catch (error) {
-      message.error("Failed to add category. Please try again.");
+      message.error("Failed to add service. Please try again.");
     }
   };
-  
 
   const uploadProps: UploadProps = {
     listType: "picture",
@@ -118,7 +110,6 @@ const AddCategory: React.FC = () => {
             ctx.fillStyle = "red";
             ctx.textBaseline = "middle";
             ctx.font = "33px Arial";
-            // ctx.fillText("Ant Design", 20, 20);
             canvas.toBlob((result) => resolve(result as Blob));
           };
         };
@@ -130,8 +121,6 @@ const AddCategory: React.FC = () => {
       }
     },
     customRequest: ({ file, onSuccess }) => {
-      // Simulate a successful upload
-      // setFileList([file]);
       setFileList([{ ...(file as RcFile), status: 'done' }]);
       onSuccess?.(file);
     },
@@ -140,16 +129,16 @@ const AddCategory: React.FC = () => {
   return (
     <Card className="max-w-xl mx-auto mt-8 p-6 shadow-lg">
       <Title level={3} className="text-center mb-6">
-        Add New Category
+        Add New Service
       </Title>
       <Form
         layout="vertical"
         onFinish={handleSubmit(onSubmit)}
         className="space-y-4"
       >
-        {/* Product Name */}
+        {/* Service Name */}
         <Form.Item
-          label="Category Name"
+          label="Service Name"
           validateStatus={errors.name ? "error" : ""}
           help={errors.name?.message}
           required
@@ -157,9 +146,92 @@ const AddCategory: React.FC = () => {
           <Controller
             name="name"
             control={control}
-            rules={{ required: "Category name is required" }}
+            rules={{ required: "Service name is required" }}
             render={({ field }) => (
-              <Input {...field} placeholder="Enter category name" />
+              <Input {...field} placeholder="Enter service name" />
+            )}
+          />
+        </Form.Item>
+
+        {/* Price */}
+        <Form.Item
+          label="Price"
+          validateStatus={errors.price ? "error" : ""}
+          help={errors.price?.message}
+          required
+        >
+          <Controller
+            name="price"
+            control={control}
+            rules={{
+              required: "Price is required",
+              min: { value: 0.01, message: "Price must be at least 0.01" },
+            }}
+            render={({ field }) => (
+              <Input
+                {...field}
+                type="number"
+                min="0.01"
+                step="0.01"
+                placeholder="Enter service price"
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value);
+                  if (value >= 0.01) {
+                    field.onChange(value);
+                  }
+                }}
+              />
+            )}
+          />
+        </Form.Item>
+
+        {/* Duration */}
+        <Form.Item
+          label="Duration (minutes)"
+          validateStatus={errors.duration ? "error" : ""}
+          help={errors.duration?.message}
+          required
+        >
+          <Controller
+            name="duration"
+            control={control}
+            rules={{
+              required: "Duration is required",
+              min: { value: 1, message: "Duration must be at least 1 minute" },
+            }}
+            render={({ field }) => (
+              <Input
+                {...field}
+                type="number"
+                min="1"
+                placeholder="Enter duration"
+                onChange={(e) => {
+                  const value = parseInt(e.target.value, 10);
+                  if (value >= 1) {
+                    field.onChange(value);
+                  }
+                }}
+              />
+            )}
+          />
+        </Form.Item>
+
+        {/* Description */}
+        <Form.Item
+          label="Description"
+          validateStatus={errors.description ? "error" : ""}
+          help={errors.description?.message}
+          required
+        >
+          <Controller
+            name="description"
+            control={control}
+            rules={{ required: "Description is required" }}
+            render={({ field }) => (
+              <Input.TextArea
+                {...field}
+                placeholder="Enter service description"
+              />
             )}
           />
         </Form.Item>
@@ -201,7 +273,7 @@ const AddCategory: React.FC = () => {
 
         <Form.Item>
           <Button type="primary" htmlType="submit" block>
-            Add Category
+            Add Service
           </Button>
         </Form.Item>
       </Form>
@@ -209,4 +281,4 @@ const AddCategory: React.FC = () => {
   );
 };
 
-export default AddCategory;
+export default AddService;

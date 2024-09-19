@@ -50,7 +50,7 @@ const Login: React.FC = () => {
           return `${user?.email} has been logged in successfully!`;
         },
         
-        // error: "Error occurred while logging in",
+        error: "Error occurred while logging in",
       }
     );
   };
