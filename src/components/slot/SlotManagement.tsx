@@ -3,7 +3,7 @@ import { Table, Tag } from "antd";
 import { useGetAllSlotsQuery, useUpdateSlotMutation } from "../../redux/features/slot/slotApi";
 import { useGetAllServicesQuery } from "../../redux/features/service/serviceApi";
 
-interface ServiceData {
+interface SlotData {
   _id: string;
   service: string;
   date: string;
@@ -16,9 +16,7 @@ const SlotManagement: React.FC = () => {
   // Example service data
   const { data: slotData, isFetching } = useGetAllSlotsQuery("");
   const { data: serviceData } = useGetAllServicesQuery("");
-  const [slots, setSlots] = useState<ServiceData[]>([]);
-  console.log({slots})
-  console.log('{slotData}',slotData?.data)
+  const [slots, setSlots] = useState<SlotData[]>([]);
   const [updateSlot] = useUpdateSlotMutation()
 
   useEffect(() => {
@@ -28,14 +26,14 @@ const SlotManagement: React.FC = () => {
   }, [slotData]);
 
   const getServiceName = (serviceId: string) => {
-    const service = serviceData?.data?.find((cat: any) => cat._id === serviceId);
+    const service = serviceData?.data?.find((item: any) => item._id === serviceId);
     return service ? service.name : "undefined";
   };
 
   const toggleSlotStatus = async (slotId: string) => {
     const updatedSlot = slots.find((slot) => slot._id === slotId);
     
-    if (updatedSlot) {
+    if (updatedSlot && updatedSlot.isBooked !== "booked") {
       const updatedStatus = updatedSlot.isBooked === "available" ? "canceled" : "available";
       
       // Update local state first for optimistic UI
@@ -75,6 +73,7 @@ const SlotManagement: React.FC = () => {
       width: "20%",
       render: (date: string) => new Date(date).toLocaleDateString(), // Format date
     },
+    
     {
       title: "Start Time",
       dataIndex: "startTime",
@@ -92,19 +91,19 @@ const SlotManagement: React.FC = () => {
       dataIndex: "isBooked",
       key: "isBooked",
       width: "10%",
-      render: (_: any, record: ServiceData) => (
+      render: (_: any, record: SlotData) => (
         <Tag
           color={record.isBooked === "available" ? "green" : "red"}
-          onClick={() => toggleSlotStatus(record._id)} // Toggle status on click
-          style={{ cursor: "pointer" }} // Show a pointer cursor to indicate interactivity
+          onClick={record.isBooked !== "booked" ? () => toggleSlotStatus(record._id) : undefined}
+          style={{ cursor: record.isBooked !== "booked" ? "pointer" : "not-allowed" }}
         >
-          {record.isBooked === "available" ? "Available" : "Canceled"}
+          {record.isBooked === "available" ? "Available" : record.isBooked === "canceled" ? "Canceled" : "Booked"}
         </Tag>
       ),
     },
   ];
 
-  const data = slotData?.data?.map((slot: ServiceData) => ({
+  const data = slotData?.data?.map((slot: SlotData) => ({
     key: slot?._id,
     ...slot,
   }));

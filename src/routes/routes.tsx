@@ -11,6 +11,9 @@ import AddServicePage from "../pages/AddServicePage";
 import CreateSlotPage from "../pages/CreateSlotPage";
 import SlotManagementPage from "../pages/SlotManagementPage";
 import BookingPage from "../pages/BookingPage";
+import UserBookingManagementPage from "../pages/UserBookingManagementPage";
+import UserManagementPage from "../pages/UserManagementPage";
+import UserDashboardPage from "../pages/UserDashboardPage";
 
 const router = createBrowserRouter([
   {
@@ -52,6 +55,18 @@ const router = createBrowserRouter([
       {
         path: "booking",
         element: <BookingPage/>
+      },
+      {
+        path: "user-booking",
+        element: <UserBookingManagementPage />,
+      },
+      {
+        path: "user-management",
+        element: <UserManagementPage />,
+      },
+      {
+        path: "user-dashboard",
+        element: <UserDashboardPage />,
       },
 
       {

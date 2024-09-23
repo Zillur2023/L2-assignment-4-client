@@ -21,7 +21,6 @@ import { Input, Pagination } from "antd";
 import {
   TClassValue,
   TFilter,
-  TFilterOptions,
   TFilterOptionsValue,
   TSortOptions,
 } from "../../types";
@@ -74,22 +73,6 @@ export default function Service() {
   };
 
   const filterOptionsValue: TFilterOptionsValue[] = [
-    // {
-    //   id: "category",
-    //   name: "Category",
-    //   options: Array.from(
-    //     new Map(
-    //       data?.data?.map((item: any) => [
-    //         item.category._id, // Use category._id as the unique key
-    //         {
-    //           value: item.category._id,
-    //           label: item.category.name,
-    //           checked: false,
-    //         },
-    //       ])
-    //     ).values() // Extract only the unique filter option objects
-    //   ) as TFilterOptions[],
-    // },
 
     {
       id: "_id",

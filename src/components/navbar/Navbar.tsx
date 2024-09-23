@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { Avatar, Space, Dropdown } from "antd";
+import { Link, useLocation } from "react-router-dom";
+import { Avatar, Space, Dropdown, Tag } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { Disclosure, DisclosureButton } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -143,6 +143,10 @@ const MobileMenu = () => {
 };
 
 export default function Navbar() {
+  const location = useLocation();
+  const { state } = location;
+  const { countdown } = state || {};
+  console.log('navbar---coundown', countdown)
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state: RootState) => state.auth);
 
@@ -186,6 +190,7 @@ export default function Navbar() {
 
               {/* Cart and Profile dropdown */}
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                {countdown ? <Tag color="red">{countdown}</Tag> : ''}
                 {/* Profile dropdown */}
                 <Dropdown menu={{ items }}>
                   <a onClick={(e) => e.preventDefault()}>

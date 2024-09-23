@@ -19,6 +19,13 @@ export const serviceApi = baseApi.injectEndpoints({
         }),
         providesTags:['Service'],
       }),
+      getService: builder.query({
+        query: (params) => ({
+          url: `/service/${params}`,
+          method: "GET",
+        }),
+        providesTags:['Service'],
+      }),
       updateService: builder.mutation({
         query: (service) => ({
           url: `/service/update/${service._id}`,
@@ -44,4 +51,4 @@ export const serviceApi = baseApi.injectEndpoints({
     }),
   });
   
-  export const { useCreateServiceMutation, useGetAllServicesQuery, useUpdateServiceMutation, useDeleteServiceMutation, useMaxPriceQuery } = serviceApi
+  export const { useCreateServiceMutation, useGetAllServicesQuery, useGetServiceQuery, useUpdateServiceMutation, useDeleteServiceMutation, useMaxPriceQuery } = serviceApi

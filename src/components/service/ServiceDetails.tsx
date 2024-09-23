@@ -42,8 +42,13 @@ const ServiceDetails: React.FC<ServiceDetailsProps> = ({ service }) => {
   };
 
   // Filter slots by selected date
+  // const filteredSlots = slotData?.data?.filter((slot: Slot) =>
+  //   selectedDate ? dayjs(slot.date).isSame(selectedDate, "day") : true
+  // );
   const filteredSlots = slotData?.data?.filter((slot: Slot) =>
-    selectedDate ? dayjs(slot.date).isSame(selectedDate, "day") : true
+    selectedDate
+      ? dayjs(slot.date).isSame(selectedDate, "day")
+      : dayjs(slot.date).isSame(dayjs(), "day") // Compare with today's date
   );
 
   return (

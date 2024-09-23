@@ -10,6 +10,8 @@ type FormValues = {
   name: string;
   email: string;
   password: string;
+  phone: string;
+  address: string;
 };
 
 const Register: React.FC = () => {
@@ -22,30 +24,26 @@ const Register: React.FC = () => {
       name: '',
       email: '',
       password: '',
+      phone: '',
+      address: '',
     },
   });
-  const navigate = useNavigate()
-  const [ createUser ] = useCreateUserMutation()
-
-
+  const navigate = useNavigate();
+  const [createUser] = useCreateUserMutation();
 
   const onSubmit: SubmitHandler<FormValues> = async (formData) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-    const result = await createUser(formData).unwrap()
-    if(result.success){
-        toast.success(result.message)
-        navigate('/auth/login')
-    }else{
-
-        toast.warning(result?.message)
-        navigate('/auth/login')
+    const result = await createUser(formData).unwrap();
+    if (result.success) {
+      toast.success(result.message);
+      navigate('/auth/login');
+    } else {
+      toast.warning(result?.message);
+      navigate('/auth/login');
     }
- 
-     
   };
+
   const goToLogin = () => {
-    navigate("/auth/login");
+    navigate('/auth/login');
   };
 
   return (
@@ -53,6 +51,7 @@ const Register: React.FC = () => {
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center text-gray-800">Register</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Name */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Name
@@ -74,6 +73,8 @@ const Register: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
             )}
           </div>
+
+          {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
@@ -101,6 +102,8 @@ const Register: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
             )}
           </div>
+
+          {/* Password */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
@@ -125,6 +128,60 @@ const Register: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
             )}
           </div>
+
+          {/* Phone */}
+          <div>
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+              Phone
+            </label>
+            <Controller
+              name="phone"
+              control={control}
+              rules={{
+                required: 'Phone number is required',
+                pattern: {
+                  value: /^[0-9]{10}$/,
+                  message: 'Enter a valid phone number',
+                },
+              }}
+              render={({ field }) => (
+                <Input
+                  id="phone"
+                  {...field}
+                  placeholder="Enter your phone number"
+                  status={errors.phone ? 'error' : ''}
+                />
+              )}
+            />
+            {errors.phone && (
+              <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+            )}
+          </div>
+
+          {/* Address */}
+          <div>
+            <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+              Address
+            </label>
+            <Controller
+              name="address"
+              control={control}
+              rules={{ required: 'Address is required' }}
+              render={({ field }) => (
+                <Input
+                  id="address"
+                  {...field}
+                  placeholder="Enter your address"
+                  status={errors.address ? 'error' : ''}
+                />
+              )}
+            />
+            {errors.address && (
+              <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>
+            )}
+          </div>
+
+          {/* Register Button */}
           <Button
             type="primary"
             htmlType="submit"
@@ -134,6 +191,8 @@ const Register: React.FC = () => {
             Register
           </Button>
         </form>
+
+        {/* Redirect to Login */}
         <Button
           type="link"
           onClick={goToLogin}

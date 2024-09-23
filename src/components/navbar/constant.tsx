@@ -9,6 +9,11 @@ export const navigation = [
   //   current: false,
   // },
   {
+    name: "User Dashboard",
+    link: "/user-dashboard",
+    current: false,
+  },
+  {
     name: "Service Management",
     link: null,
     current: false,
@@ -24,7 +29,7 @@ export const navigation = [
         current: false,
       },
       {
-        name: "Manage Service",
+        name: "Manage Services",
         link: "/service-management",
         current: false,
       },
@@ -43,6 +48,23 @@ export const navigation = [
       {
         name: "Manage Slots",
         link: "/slot-management",
+        current: false,
+      },
+    ],
+  },
+  {
+    name: "User Management",
+    link: null,
+    current: false,
+    subMenu: [
+      {
+        name: "Users booking",
+        link: "/user-booking",
+        current: false,
+      },
+      {
+        name: "Manage Users",
+        link: "/user-management",
         current: false,
       },
     ],

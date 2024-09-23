@@ -11,11 +11,13 @@ import { createSlice } from '@reduxjs/toolkit';
 type TAuthState = {
   user: null | any;
   token: null | string;
+  countdown: null | any;
 };
 
 const initialState: TAuthState = {
   user: null,
   token: null,
+  countdown:null,
 };
 
 const authSlice = createSlice({
@@ -31,6 +33,9 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
     },
+    countdown: (state) => {
+      state
+    }
   },
 });
 

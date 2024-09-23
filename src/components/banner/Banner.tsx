@@ -1,4 +1,3 @@
-import bannerImg from "../../assets/HOMEPAGE_clubseriesplus-cardio_021224.webp";
 
 export default function Banner() {
   return (

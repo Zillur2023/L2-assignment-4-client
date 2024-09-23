@@ -1,4 +1,3 @@
-import React from "react";
 
 // interface AvailableSlotsProps {
 //   slots: { time: string; isBooked: boolean }[];
@@ -11,14 +10,14 @@ const AvailableSlots= ({
   slots,
   selectedSlot,
   onSlotSelect,
-}) => {
+}:any) => {
   return (
     <div className="mb-6">
       <h2 className="text-xl font-semibold mb-2">Available Time Slots</h2>
       <div className="grid grid-cols-3 gap-4">
-        {slots.map((slot,index) => (
+        {slots.map((slot:any) => (
           <button
-            key={slot.index}
+            key={slot._id}
             disabled={slot.isBooked}
             onClick={() => onSlotSelect(slot)}
             className={`py-2 px-4 rounded-lg text-sm font-medium ${
